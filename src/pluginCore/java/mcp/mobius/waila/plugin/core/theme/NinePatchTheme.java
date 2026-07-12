@@ -2,7 +2,7 @@ package mcp.mobius.waila.plugin.core.theme;
 
 import java.nio.file.Files;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import mcp.mobius.waila.api.ITheme;
