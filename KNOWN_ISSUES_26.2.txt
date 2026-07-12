@@ -1,0 +1,17 @@
+Known issues — Minecraft 26.2 port (mc/26.2)
+=================================================
+These are pre-existing upstream issues or cosmetic differences,
+not regressions introduced by this port. Logged for awareness
+and potential future fixes.
+
+1. Shears tool-indicator logic has a pre-existing bug
+   (stuck wrong-tool indicator on cobweb, missing icon on leaves/wool).
+   Confirmed present in stock WTHIT 26.1 as well — not introduced
+   by this port.
+
+2. Tab styling uses a custom flat-color look instead of stock
+   vanilla dark/white-border tabs. This was never a correct
+   reimplementation of the original (which used vanilla's default
+   TabButton rendering), just a plausible-looking substitute that
+   happened to compile. Candidate for a future enhancements pass
+   to make it vanilla-consistent.

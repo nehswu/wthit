@@ -10,7 +10,6 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.DoublePlantBlock;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.common.IForgeShearable;
 import net.minecraftforge.common.ToolActions;
 
 public class ForgeClientPlugin implements IWailaClientPlugin {
@@ -52,7 +51,7 @@ public class ForgeClientPlugin implements IWailaClientPlugin {
 
         registrar.toolType(Identifier.withDefaultNamespace("shears"), IToolType.builder()
             .lowestTierItem(Items.SHEARS)
-            .blockPredicate(it -> it.getBlock() instanceof IForgeShearable || it.getBlock() instanceof DoublePlantBlock)
+            .blockPredicate(it -> it.getBlock() instanceof DoublePlantBlock)
             .itemPredicate(it -> it.canPerformAction(ToolActions.SHEARS_DIG))
             .build());
     }
