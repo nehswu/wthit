@@ -30,7 +30,12 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build
-        run: ./gradlew build --no-daemon
+        run: |
+          for i in 1 2 3; do
+            ./gradlew build --no-daemon && break
+            echo "Build attempt $i failed, retrying..."
+            sleep 10
+          done
 
       - name: Collect built jars
         id: collect
