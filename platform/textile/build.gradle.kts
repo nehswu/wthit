@@ -9,9 +9,9 @@ dependencies {
     implementation("net.fabricmc:fabric-loader:${rootProp["fabricLoader"]}")
 
     compileOnly("net.fabricmc.fabric-api:fabric-api:${rootProp["fabricApi"]}")
-    compileOnly("com.terraformersmc:modmenu:${rootProp["modMenu"]}")
+    compileOnly("maven.modrinth:mOgUt4GM:${rootProp["modMenu"]}")
     compileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${rootProp["rei"]}")
-    compileOnly("dev.emi:emi-fabric:${rootProp["emi"]}")
+    compileOnly("maven.modrinth:fRiHVvU7:${rootProp["emi"]}")
     compileOnly("teamreborn:energy:${rootProp["trEnergy"]}")
 }
 
