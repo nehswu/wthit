@@ -1,0 +1,62 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - "*-verified"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tag
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: oracle
+          java-version: "25"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Build
+        run: ./gradlew build --no-daemon
+
+      - name: Collect built jars
+        id: collect
+        run: |
+          mkdir -p release-artifacts
+          find . -path "*/build/libs/*.jar" \
+            ! -name "*-sources.jar" \
+            ! -name "*-dev.jar" \
+            -exec cp {} release-artifacts/ \;
+          ls -la release-artifacts
+
+      - name: Extract changelog for this release
+        id: changelog
+        run: |
+          TAG_MSG="$(git tag -l --format='%(contents)' "${{ github.ref_name }}")"
+          if [ -n "$TAG_MSG" ]; then
+            echo "$TAG_MSG" > release-notes.md
+          else
+            awk '/^===|^---/{if (found) exit; found=1; next} found' CHANGELOG.txt > release-notes.md
+          fi
+          cat release-notes.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          body_path: release-notes.md
+          files: release-artifacts/*.jar
