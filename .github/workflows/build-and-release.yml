@@ -67,25 +67,9 @@ jobs:
           done
           ls -la release-artifacts
 
-      - name: Extract changelog for this release
-        id: changelog
-        run: |
-          TAG="${{ inputs.tag || github.ref_name }}"
-          TAG_MSG="$(git tag -l --format='%(contents)' "$TAG" 2>/dev/null || true)"
-          if [ -n "$TAG_MSG" ]; then
-            echo "$TAG_MSG" > release-notes.md
-          elif echo "$TAG" | grep -qi "snapshot"; then
-            [ -f PORT_NOTES.md ] && cp PORT_NOTES.md release-notes.md
-          else
-            awk '!a && /^===|^---/{a=1; next} a && /^===|^---/{exit} a' CHANGELOG.txt > release-notes.md
-          fi
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          cat release-notes.md
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.changelog.outputs.tag }}
-          name: ${{ steps.changelog.outputs.tag }}
-          body_path: release-notes.md
+          tag_name: ${{ inputs.tag || github.ref_name }}
+          name: ${{ inputs.tag || github.ref_name }}
           files: release-artifacts/*.jar
