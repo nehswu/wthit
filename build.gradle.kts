@@ -21,6 +21,7 @@ allprojects {
         maven("https://maven.blamejared.com")
         maven("https://maven.shedaniel.me")
         maven("https://maven.terraformersmc.com/releases")
+        maven("https://api.modrinth.com/maven")
 
         maven("https://cursemaven.com") {
             content {
