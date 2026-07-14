@@ -62,10 +62,9 @@ jobs:
         id: collect
         run: |
           mkdir -p release-artifacts
-          find . -path "*/build/libs/*.jar" \
-            ! -name "*-sources.jar" \
-            ! -name "*-dev.jar" \
-            -exec cp {} release-artifacts/ \;
+          for dir in fabric forge neo; do
+            cp platform/$dir/build/libs/*.jar release-artifacts/ 2>/dev/null || true
+          done
           ls -la release-artifacts
 
       - name: Extract changelog for this release
@@ -76,9 +75,20 @@ jobs:
           if [ -n "$TAG_MSG" ]; then
             echo "$TAG_MSG" > release-notes.md
           elif echo "$TAG" | grep -qi "snapshot"; then
-            cat PORT_NOTES.md > release-notes.md
+            [ -f PORT_NOTES.md ] && cp PORT_NOTES.md release-notes.md
           else
-            awk '/^===|^---/{if (found) exit; found=1; next} found' CHANGELOG.txt > release-notes.md
+            python3 -c "
+import sys
+lines = open('CHANGELOG.txt').readlines()
+for i, line in enumerate(lines):
+    if line.startswith('===') or line.startswith('---'):
+        for j in range(i+1, len(lines)):
+            if lines[j].startswith('===') or lines[j].startswith('---'):
+                sys.stdout.write(''.join(lines[i+1:j]))
+                sys.exit(0)
+        sys.stdout.write(''.join(lines[i+1:]))
+        sys.exit(0)
+" > release-notes.md
           fi
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           cat release-notes.md
