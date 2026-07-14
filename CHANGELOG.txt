@@ -1,3 +1,20 @@
+20.x - 26.2 - mc/26.2 - java 25
+================================
+20.0.0   - Updated to Minecraft 26.2
+         - Fixed Forge compile error from removed IForgeShearable API (Forge 65.0.1)
+           - Known limitation: shears block-match coverage on Forge is currently
+             reduced to DoublePlantBlock only pending a proper replacement; see
+             KNOWN_ISSUES_26.2.txt, issue #2
+         - Updated GUI code for Minecraft.gui.*, Options/Gui.hud.*, Language,
+           EntityTypes/BlockEntityTypes, and advancements.predicates API changes
+         - Updated WthitTabButton for the new abstract TabButton API
+           - Known cosmetic difference from stock: uses a flat-color tab style
+             rather than vanilla's default; not a regression, see
+             KNOWN_ISSUES_26.2.txt
+         - Updated test fixtures: BlockEntityType.BED -> BlockEntityTypes.BARREL,
+           Blocks.BLACK_WOOL -> Blocks.STONE (both removed upstream, test-only,
+           no user-facing effect)
+
 19.x - 26.1.1 - dev/26.1 - java 25
 ==================================
 19.0.1   - Updated to Minecraft 26.1.1

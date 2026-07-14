@@ -1,17 +1,60 @@
 Known issues — Minecraft 26.2 port (mc/26.2)
 =================================================
-These are pre-existing upstream issues or cosmetic differences,
-not regressions introduced by this port. Logged for awareness
-and potential future fixes.
+These are pre-existing upstream issues, port-specific limitations, or
+cosmetic differences — not regressions this port silently introduced
+without a known cause. Logged for awareness and future fixes.
 
-1. Shears tool-indicator logic has a pre-existing bug
-   (stuck wrong-tool indicator on cobweb, missing icon on leaves/wool).
-   Confirmed present in stock WTHIT 26.1 as well — not introduced
-   by this port.
+1. Shears tier-comparison logic (pre-existing, all platforms)
+   Shears show a stuck "wrong tool" indicator on cobweb, even when held
+   correctly. Root cause: WTHIT's tier-resolution system (HarvestProvider /
+   ToolTier) has no concept of a "no tier" tool. Shears can never resolve a
+   ToolTier (they're not part of the wood/stone/iron/diamond/gold/netherite
+   tier ladder), and the block-side tier-detection loop has no fallback for
+   blocks outside that ladder entirely — it spuriously assigns the lowest
+   tier to shears-only blocks like cobweb, then the null shears tier always
+   fails that comparison.
+   Confirmed present in stock, unmodified WTHIT 26.1 as well — not
+   introduced by this port. Fix is being tracked as an upstream PR target
+   against badasintended/wthit (not fixable meaningfully within this fork
+   alone, since it's shared logic unrelated to any version-specific API).
 
-2. Tab styling uses a custom flat-color look instead of stock
-   vanilla dark/white-border tabs. This was never a correct
-   reimplementation of the original (which used vanilla's default
-   TabButton rendering), just a plausible-looking substitute that
-   happened to compile. Candidate for a future enhancements pass
-   to make it vanilla-consistent.
+   Note: wool blocks correctly show no shears icon at all — this is
+   expected behavior (wool was never in WTHIT's shearable-block set), not
+   part of this bug. An earlier version of this note incorrectly listed
+   wool as affected.
+
+2. Forge shears block-coverage regression (this port, Forge only)
+   On Forge specifically, the shears tool-type icon is missing entirely on
+   cobweb, leaves, vines, tall grass, and seagrass — only DoublePlantBlock
+   still shows it. Cause: Forge 65.0.1 removed IForgeShearable with no
+   direct replacement, and the compile-fix applied during this port
+   (ForgeClientPlugin.java) dropped coverage down to DoublePlantBlock only
+   rather than restoring the full block set. Fabric/Textile's equivalent
+   coverage (via ShearableBlocksMixin) was not affected and remains
+   correct. NeoForge's coverage has not yet been independently verified
+   against the Fabric reference set.
+   Fix is in scope for this fork (not an upstream issue) — tracked
+   separately, targets ForgeClientPlugin.java and NeoClientPlugin.java on
+   this branch.
+
+3. "Leaf Litter" missing shears icon (this port or upstream, stale list)
+   WTHIT's shearable-block detection (ShearableBlocksMixin) uses a
+   hardcoded list of vanilla block classes rather than a tag-based check.
+   Newer blocks added to the game after that list was last updated — Leaf
+   Litter specifically — aren't covered and show no shears icon, distinct
+   from issue #1 above (this is a stale-coverage gap, not a tier-logic
+   bug). Fix is a small addition to the ShearableBlocksMixin class list.
+
+4. Tab styling cosmetic difference (this port, all platforms)
+   The WTHIT settings screen's tabs render as flat solid-color panels
+   instead of stock's vanilla dark-background/white-border tab look. This
+   is not a broken or accidental substitute — the original 26.1.1 codebase
+   never had a custom tab button at all; it called vanilla's addTabs() and
+   let Minecraft render tabs itself using its own default style.
+   TabButton became abstract in 26.2, forcing this port to write a
+   concrete implementation for the first time. The current flat-color
+   style is the deliberately restored/settled design for this port, not a
+   bug, but it does mean the settings screen no longer matches stock's
+   default vanilla look. Candidate for a future enhancements pass to
+   reimplement using vanilla's own tab sprite textures correctly (rather
+   than the earlier attempt that used them incorrectly and was reverted).
